@@ -1,0 +1,10 @@
+1. Abra dois terminais
+
+2. Vá até a pasta code com cada um deles:
+cd code
+
+3. No primeiro terminal, abra o servidor:
+python server.py
+
+4. No segundo, abra o client:
+python client.py
