@@ -1,8 +1,8 @@
 ======================CHAT=================================
 1. Abra dois terminais
 
-2. Vá até a pasta code com cada um deles:
-cd code
+2. Vá até a pasta chat com cada um deles:
+cd chat
 
 3. No primeiro terminal, abra o servidor:
 python server.py
