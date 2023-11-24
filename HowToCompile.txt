@@ -1,3 +1,4 @@
+======================CHAT=================================
 1. Abra dois terminais
 
 2. Vá até a pasta code com cada um deles:
@@ -7,4 +8,15 @@ cd code
 python server.py
 
 4. No segundo, abra o client:
+python client.py
+
+=======================PPT=================================
+O Pedra Papel Tesoura precisa de pacotes extras:
+pip install pygame
+pip install network
+
+Para rodar o PPT é necessário primeiro iniciar o servidor (isso já na pasta do rockPapersScissors [cd rockPapersScissors]):
+python server.py
+
+Depois, em outros 2 terminais, execute os clients:
 python client.py
