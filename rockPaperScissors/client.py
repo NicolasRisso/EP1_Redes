@@ -1,7 +1,7 @@
 import pygame
 from network import Network
 import pickle
-from button import Button as MyButton, callback_rock, callback_paper, callback_scissors
+from button import Button as MyButton
 
 pygame.font.init()
 
@@ -14,6 +14,7 @@ pygame.display.set_caption("Pedra Papel Tesoura: Online")
 button_images = [pygame.image.load("../art/icons/pedra.png"),
                  pygame.image.load("../art/icons/papel.png"),
                  pygame.image.load("../art/icons/tesoura.png")]
+background_image = pygame.image.load("../art/icons/moldura.png")
 
 
 class Button:
@@ -83,14 +84,14 @@ def redrawWindow(win, game, p):
             win.blit(text2, (400, 350))
 
         for btn in btns:
-            win.blit(btn.image, btn.rect)
+            btn.draw(win)
 
     pygame.display.update()
 
 
-btns = [MyButton(button_images[0], (50, 500), callback_rock),
-        MyButton(button_images[1], (250, 500), callback_paper),
-        MyButton(button_images[2], (450, 500), callback_scissors)]
+btns = [MyButton(button_images[0], (103, 500), "Rock", background_image),
+        MyButton(button_images[1], (302, 500), "Paper", background_image),
+        MyButton(button_images[2], (501, 500), "Scissors", background_image)]
 
 def main():
     run = True
@@ -141,10 +142,10 @@ def main():
                     if btn.click(pos) and game.connected():
                         if player == 0:
                             if not game.p1Went:
-                                n.send(btn.text)
+                                n.send(btn.callback)
                         else:
                             if not game.p2Went:
-                                n.send(btn.text)
+                                n.send(btn.callback)
 
         redrawWindow(win, game, player)
 
@@ -157,7 +158,7 @@ def menu_screen():
         win.fill((128, 128, 128))
         font = pygame.font.SysFont("roboto", 60)
         text = font.render("Clique para Procurar Partida", 1, (255,0,0))
-        win.blit(text, (100,200))
+        win.blit(text, (width // 2 - text.get_width() // 2,height // 2 - text.get_height() // 2))
         pygame.display.update()
 
         for event in pygame.event.get():
