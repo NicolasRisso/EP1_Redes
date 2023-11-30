@@ -4,6 +4,7 @@ import threading
 from _thread import *
 from game import Game
 from chat.server import server_chat
+from chat.colors import Colors, print_colored
 
 server = "localhost"
 port = 6969
@@ -16,6 +17,7 @@ except socket.error as e:
     str(e)
 
 s.listen(2)
+print_colored("[GAME]> ", Colors.GREEN)
 print("Waiting for a connection, Server Started")
 
 connected = set()
@@ -48,11 +50,12 @@ def threaded_client(conn, p, gameId):
                 break
         except:
             break
-
-    print("Lost connection")
+    print_colored("[GAME]> ", Colors.GREEN)
+    print("Conexão Perdida")
     try:
         del games[gameId]
-        print("Closing Game", gameId)
+        print_colored("[GAME]> ", Colors.GREEN)
+        print("Fechando Jogo", gameId)
     except:
         pass
     idCount -= 1
@@ -62,14 +65,16 @@ def threaded_client(conn, p, gameId):
 
 while True:
     conn, addr = s.accept()
-    print("Connected to:", addr)
+    print_colored("[GAME]> ", Colors.GREEN)
+    print("Conectado à:", addr)
 
     idCount += 1
     p = 0
     gameId = (idCount - 1)//2
     if idCount % 2 == 1:
         games[gameId] = Game(gameId)
-        print("Creating a new game...")
+        print_colored("[GAME]> ", Colors.GREEN)
+        print("Criando novo jogo...")
     else:
         games[gameId].ready = True
         p = 1

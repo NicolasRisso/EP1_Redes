@@ -76,7 +76,7 @@ def main():
     clock = pygame.time.Clock()
     n = Network()
     player = int(n.getP())
-    print("Você é o jogador", player)
+    #print("Você é o jogador", player)
 
     while run:
         clock.tick(60)
@@ -84,7 +84,7 @@ def main():
             game = n.send("get")
         except:
             run = False
-            print("Não foi possível achar uma partida")
+            print(">>>>>Não foi possível achar uma partida")
             break
 
         if game.bothWent():
@@ -94,7 +94,7 @@ def main():
                 game = n.send("reset")
             except:
                 run = False
-                print("Nenhum jogador encontrado.")
+                print(">>>>>Nenhum jogador encontrado.")
                 break
 
             font = pygame.font.SysFont("roboto", 90)
@@ -146,10 +146,12 @@ def menu_screen():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 run = False
 
+    thread_client_chat = threading.Thread(target=client_chat)
+    thread_client_chat.start()
+
     main()
 
-thread_client_chat = threading.Thread(target=client_chat)
-thread_client_chat.start()
+print(">>>CONECTE-SE À UMA PARTIDA PARA INCIAR O CHAT<<<")
 
 while True:
     menu_screen()

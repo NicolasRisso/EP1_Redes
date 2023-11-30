@@ -1,5 +1,6 @@
 import socket
 import select
+from chat.colors import Colors, print_colored
 
 HEADER_LENGTH = 10
 
@@ -23,6 +24,7 @@ server_socket.listen()
 sockets_list = [server_socket]
 clients = {}
 
+print_colored("[CHAT]> ", Colors.MAGENTA)
 print(f'Servidor ouvindo conexão em {IP}:{PORT}...')
 
 
@@ -71,6 +73,7 @@ def server_chat():
                 #E salva o username do cliente para uso futuro.
                 clients[client_socket] = user
 
+                print_colored("[CHAT]> ", Colors.MAGENTA)
                 print('Nova conexão aceita de {}:{}, username: {}'.format(*client_address, user['data'].decode('utf-8')))
 
             # Se a conexão já existir, ela já é um cliente.
@@ -81,6 +84,7 @@ def server_chat():
 
                 #Se a mensagem for False, o cliente se desconectou.
                 if message is False:
+                    print_colored("[CHAT]> ", Colors.MAGENTA)
                     print('Conexão fechada de: {}'.format(clients[notified_socket]['data'].decode('utf-8')))
 
                     #Removemos o cliente da lista de sockets.
@@ -94,6 +98,7 @@ def server_chat():
                 #Separamos o usuário por Socket notificado, para, assim, sabermos quem ele é
                 user = clients[notified_socket]
 
+                print_colored("[CHAT]> ", Colors.MAGENTA)
                 print(f'Mensagem recebida de ({user["data"].decode("utf-8")}): {message["data"].decode("utf-8")}')
 
                 #Passamos por todos os clientes.
