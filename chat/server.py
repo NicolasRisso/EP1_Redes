@@ -80,7 +80,7 @@ while True:
 
             #Se a mensagem for False, o cliente se desconectou.
             if message is False:
-                print('Closed connection from: {}'.format(clients[notified_socket]['data'].decode('utf-8')))
+                print('Conexão fechada de: {}'.format(clients[notified_socket]['data'].decode('utf-8')))
 
                 #Removemos o cliente da lista de sockets.
                 sockets_list.remove(notified_socket)
@@ -93,7 +93,7 @@ while True:
             #Separamos o usuário por Socket notificado, para, assim, sabermos quem ele é
             user = clients[notified_socket]
 
-            print(f'Received message from {user["data"].decode("utf-8")}: {message["data"].decode("utf-8")}')
+            print(f'Mensagem recebida de ({user["data"].decode("utf-8")}): {message["data"].decode("utf-8")}')
 
             #Passamos por todos os clientes.
             for client_socket in clients:
