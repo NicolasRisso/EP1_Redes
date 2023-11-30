@@ -1,7 +1,9 @@
 import socket
-from _thread import *
 import pickle
+import threading
+from _thread import *
 from game import Game
+from chat.server import server_chat
 
 server = "localhost"
 port = 6969
@@ -74,3 +76,8 @@ while True:
 
 
     start_new_thread(threaded_client, (conn, p, gameId))
+
+    once = True
+    if once:
+        thread_server_chat = threading.Thread(target=server_chat)
+        thread_server_chat.start()

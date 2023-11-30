@@ -3,12 +3,12 @@ import select
 import errno
 import sys
 import threading
-from colors import Colors, print_colored
+from chat.colors import Colors, print_colored
 
 HEADER_LENGTH = 10
 
 IP = "localhost"
-PORT = 6969
+PORT = 6968
 
 
 def receive_messages(client_socket, HEADER_LENGTH, my_username):
@@ -54,7 +54,7 @@ def receive_messages(client_socket, HEADER_LENGTH, my_username):
             sys.exit()
 
 
-def main():
+def client_chat():
     my_username = input("Username: ")
 
     #Cria um Socket TCP para se comunicar com o servidor
@@ -96,4 +96,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    client_chat()

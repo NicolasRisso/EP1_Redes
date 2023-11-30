@@ -1,7 +1,9 @@
 import pygame
+import threading
 from network import Network
 import pickle
 from button import Button as MyButton
+from chat.client import client_chat
 
 pygame.font.init()
 
@@ -145,6 +147,9 @@ def menu_screen():
                 run = False
 
     main()
+
+thread_client_chat = threading.Thread(target=client_chat)
+thread_client_chat.start()
 
 while True:
     menu_screen()
