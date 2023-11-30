@@ -1,37 +1,114 @@
 import socket
-import struct
+import select
 
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind(("localhost", 9999))
-server.listen()
+HEADER_LENGTH = 10
 
-client, address = server.accept()
+IP = "localhost"
+PORT = 6969
 
-username = input("Username: ")
+#Realizamos uma conexão TCP
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-done = False
-while not done:
-    #Recebe o tamanho do username e depois o username
-    response_username_length = struct.unpack('!I', client.recv(4))[0]
-    response_username = client.recv(response_username_length).decode('utf-8')
+#Definimos o Socket como reutilizavel -> Ou seja, mesmo que estaja esperando
+#uma resposta, ele ainda poderá enviar novas mensagens.
+server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-    #Recebe o tamanho da mensagem e depois a mensagem
-    message_length = struct.unpack('!I', client.recv(4))[0]
-    message = client.recv(message_length).decode('utf-8')
+#Conecta
+server_socket.bind((IP, PORT))
 
-    print(f"({response_username}): {message}")
+#Define que o Socket ira "ouvir" a novas conexões
+server_socket.listen()
 
-    if message == "QUIT":
-        done = True
-    else:
-        # Respond to the client
-        response = input(f"({username}): ")
-        
-        # Send the length of the response and the response itself
-        client.send(struct.pack('!I', len(username)))
-        client.send(username.encode('utf-8'))
+#Lista de Sockets e de Clientes
+sockets_list = [server_socket]
+clients = {}
 
-        client.send(struct.pack('!I', len(response)))
-        client.send(response.encode('utf-8'))
+print(f'Servidor ouvindo conexão em {IP}:{PORT}...')
 
-client.close()
+
+def receive_message(client_socket):
+    try:
+        #Header contem o tamanho da mensagem que será recebida.
+        message_header = client_socket.recv(HEADER_LENGTH)
+
+        #Se não recebermos nada -> O cliente fechou conexão ou caiu.
+        if not len(message_header):
+            return False
+
+        #Conversão do Header para um valor int.
+        message_length = int(message_header.decode('utf-8').strip())
+
+        #Retorna o header com a mensagem do cliente.
+        return {'header': message_header, 'data': client_socket.recv(message_length)}
+
+    except:
+        #Pega o caso em que o cliente fecha brutalmente seu programa (alt + f4) ou (ctrl + C).
+        return False
+
+while True:
+
+    read_sockets, _, exception_sockets = select.select(sockets_list, [], sockets_list)
+
+    #Ler todas as potenciais novas conexões
+    for notified_socket in read_sockets:
+
+        # Se a conexão notificado for um "servidor", nova conexão, aceitaremos-a. (português foda aqui kkkk)
+        if notified_socket == server_socket:
+            #Aceitamos a conexão
+            client_socket, client_address = server_socket.accept()
+
+            #Recebe o nome do cliente
+            user = receive_message(client_socket)
+
+            #Se não mandar, o cliente fechou a conexão antes mesmo de começá-la.
+            if user is False:
+                continue
+
+            #Adiciona o Socket à lista de sockets de clientes.
+            sockets_list.append(client_socket)
+
+            #E salva o username do cliente para uso futuro.
+            clients[client_socket] = user
+
+            print('Nova conexão aceita de {}:{}, username: {}'.format(*client_address, user['data'].decode('utf-8')))
+
+        # Se a conexão já existir, ela já é um cliente.
+        else:
+
+            #Receba a mensagem.
+            message = receive_message(notified_socket)
+
+            #Se a mensagem for False, o cliente se desconectou.
+            if message is False:
+                print('Closed connection from: {}'.format(clients[notified_socket]['data'].decode('utf-8')))
+
+                #Removemos o cliente da lista de sockets.
+                sockets_list.remove(notified_socket)
+
+                #E da lista de usuários.
+                del clients[notified_socket]
+
+                continue
+
+            #Separamos o usuário por Socket notificado, para, assim, sabermos quem ele é
+            user = clients[notified_socket]
+
+            print(f'Received message from {user["data"].decode("utf-8")}: {message["data"].decode("utf-8")}')
+
+            #Passamos por todos os clientes.
+            for client_socket in clients:
+
+                #Não mandamos a mensagem do remetente devolta para ele.
+                if client_socket != notified_socket:
+
+                    #Envia a mensagem (com username junto)
+                    client_socket.send(user['header'] + user['data'] + message['header'] + message['data'])
+
+    #Para lidar com algumas exceptions
+    for notified_socket in exception_sockets:
+
+        #Remove da Socket List
+        sockets_list.remove(notified_socket)
+
+        #Remove da Client list
+        del clients[notified_socket]
