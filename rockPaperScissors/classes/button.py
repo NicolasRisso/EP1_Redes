@@ -1,12 +1,11 @@
 from network import Network
-import pygame
 
 class Button:
-    def __init__(self, image, position, callback, background_image):
+    def __init__(self, image, position, callback, background_image=None):
         self.image = image
         self.rect = image.get_rect(topleft=position)
         self.callback = callback
-        self.background_image = background_image
+        self.background_image = background_image or None
  
     def on_click(self, event):
         if event.button == 1:

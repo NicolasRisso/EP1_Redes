@@ -2,7 +2,9 @@ import pygame
 import threading
 from network import Network
 import pickle
-from button import Button as MyButton
+from classes.button import Button as MyButton
+from classes.inputbox import InputBox
+from classes.text import Text
 from chat.client import client_chat
 
 pygame.font.init()
@@ -17,6 +19,7 @@ button_images = [pygame.image.load("../art/icons/pedra.png"),
                  pygame.image.load("../art/icons/papel.png"),
                  pygame.image.load("../art/icons/tesoura.png")]
 background_image = pygame.image.load("../art/icons/moldura.png")
+conectar_button_image = pygame.image.load("../art/buttons/connect_text.png")
 
 
 def redrawWindow(win, game, p):
@@ -151,7 +154,50 @@ def menu_screen():
 
     main()
 
+def hub_screen():
+    clock = pygame.time.Clock()
+    input_box1 = InputBox(300, 300, 140, 32)
+    input_box2 = InputBox(300, 400, 140, 32)
+    input_box3 = InputBox(300, 500, 140, 32)
+    title = Text(75, 80, "Pedra Papel Tesoura", (235, 235, 235), 80)
+    title2 = Text(225, 130, "ONLINE", (235, 30, 30), 100)
+    text1 = Text(150, 303, "Username:", (220, 220, 220))
+    text2 = Text(150, 403, "IP:", (220, 220, 220))
+    text3 = Text(150, 503, "Porta:", (220, 220, 220))
+    input_boxes = [input_box1, input_box2, input_box3]
+    texts = [title, title2, text1, text2, text3]
+    buttons = [MyButton(conectar_button_image, (150, 580), "Connect")]
+    done = False
+
+    while not done:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                done = True
+            for box in input_boxes:
+                box.handle_event(event)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                for btn in buttons:
+                    if btn.click(pos):
+                        if btn.callback == "Connect":
+                            return 
+
+        for box in input_boxes:
+            box.update()                    
+
+        for box in input_boxes:
+            box.draw(win)
+        for text in texts:
+            text.draw(win)
+        for btn in buttons:
+            btn.draw(win)
+
+        pygame.display.flip()
+        clock.tick(60)
+
 print(">>>CONECTE-SE À UMA PARTIDA PARA INCIAR O CHAT<<<")
 
 while True:
+    hub_screen()
     menu_screen()
