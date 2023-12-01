@@ -108,6 +108,12 @@ def main():
     global porta
     global vitorias
     global derrotas
+
+    vitorias = 0
+    derrotas = 0
+    Text.setText(texts_score[0], str(vitorias))
+    Text.setText(texts_score[1], str(derrotas))
+
     run = True
     clock = pygame.time.Clock()
     n = Network(server=ip, port=porta)
@@ -204,9 +210,6 @@ def hub_screen():
     global ip
     global porta
     global my_username
-    global vitorias
-    global derrotas
-    vitorias = derrotas = 0
 
     clock = pygame.time.Clock()
     input_box1 = InputBox(300, 300, 140, 32)
