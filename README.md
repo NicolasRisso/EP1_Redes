@@ -18,9 +18,9 @@ Basta ler o txt "HotToCompile", mas aqui vai um resumo:
 
 ## Créditos
 Desenvolvido Por:
-Nicolas Pereira Risso Vieira
-Andreas Hukuhara Christe
-Pedro Palazzi de Souza
+- Nicolas Pereira Risso Vieira
+- Andreas Hukuhara Christe
+- Pedro Palazzi de Souza
 Os tutoriais abaixo foram de grande ajuda para o desenvolvimento desse projeto:
--> https://www.youtube.com/watch?v=ytu2yV3Gn1I
--> https://www.techwithtim.net/tutorials/python-online-game-tutorial/online-rock-paper-scissors-p-4
+- https://www.youtube.com/watch?v=ytu2yV3Gn1I
+- https://www.techwithtim.net/tutorials/python-online-game-tutorial/online-rock-paper-scissors-p-4
