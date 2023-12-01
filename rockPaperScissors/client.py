@@ -25,6 +25,9 @@ conectar_button_image = pygame.image.load("../art/buttons/connect_text.png")
 global ip
 global porta
 global my_username
+global vitorias
+global derrotas
+vitorias = derrotas = 0
 
 def verificar_conexao(ip, porta):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -49,11 +52,11 @@ def redrawWindow(win, game, p):
         win.blit(text, (width/2 - text.get_width()/2, height/2 - text.get_height()/2))
     else:
         font = pygame.font.SysFont("roboto", 45)
-        text = font.render("Sua Escolha", 1, (0, 255,255))
+        text = font.render("Sua Escolha", 1, (0, 255, 255))
         win.blit(text, (80, 200))
 
-        text = font.render("Escolha do Oponente", 1, (0, 255, 255))
-        win.blit(text, (380, 200))
+        text = font.render("Oponente", 1, (255, 0, 0))
+        win.blit(text, (430, 200))
 
         move1 = game.get_player_move(0)
         move2 = game.get_player_move(1)
@@ -84,6 +87,8 @@ def redrawWindow(win, game, p):
 
         for btn in btns:
             btn.draw(win)
+        for text in texts_score:
+            text.draw(win)
 
     pygame.display.update()
 
@@ -91,10 +96,14 @@ def redrawWindow(win, game, p):
 btns = [MyButton(button_images[0], (103, 500), "Rock", background_image),
         MyButton(button_images[1], (302, 500), "Paper", background_image),
         MyButton(button_images[2], (501, 500), "Scissors", background_image)]
+texts_score = [Text(125, 80, "0", (20, 235, 235), 80),
+               Text(475, 80, "0", (235, 20, 20), 80)]
 
 def main():
     global ip
     global porta
+    global vitorias
+    global derrotas
     run = True
     clock = pygame.time.Clock()
     n = Network(server=ip, port=porta)
@@ -123,10 +132,18 @@ def main():
             font = pygame.font.SysFont("roboto", 90)
             if (game.winner() == 1 and player == 1) or (game.winner() == 0 and player == 0):
                 text = font.render("Vitória!", 1, (255,0,0))
+                vitorias += 1
+                texts_score[0].text = str(vitorias)
             elif game.winner() == -1:
                 text = font.render("Empate", 1, (255,0,0))
+                derrotas += 0.5
+                vitorias += 0.5
+                texts_score[0].text = str(vitorias)
+                texts_score[1].text = str(derrotas)
             else:
                 text = font.render("Derrota...", 1, (255, 0, 0))
+                derrotas += 1
+                texts_score[1].text = str(derrotas)
 
             win.blit(text, (width/2 - text.get_width()/2, height/2 - text.get_height()/2))
             pygame.display.update()

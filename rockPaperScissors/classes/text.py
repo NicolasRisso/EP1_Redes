@@ -16,3 +16,6 @@ class Text:
         font = pg.font.SysFont("roboto", self.font_size)
         text_surface = font.render(self.text, True, self.color)
         screen.blit(text_surface, (self.x, self.y))
+    
+    def setText(self, text=''):
+        self.text = text
