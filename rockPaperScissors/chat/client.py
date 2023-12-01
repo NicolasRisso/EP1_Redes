@@ -11,7 +11,7 @@ IP = "localhost"
 PORT = 6968
 
 
-def receive_messages(client_socket, HEADER_LENGTH, my_username):
+def receive_messages(client_socket, HEADER_LENGTH):
     while True:
         try:
             #loop entre todas as mensagens recebidas nesse meio tempo.
@@ -54,8 +54,8 @@ def receive_messages(client_socket, HEADER_LENGTH, my_username):
             sys.exit()
 
 
-def client_chat():
-    my_username = input("Username: ")
+def client_chat(IP, my__username):
+    my_username = my__username
 
     #Cria um Socket TCP para se comunicar com o servidor
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -75,7 +75,7 @@ def client_chat():
     print("Digite no terminal para enviar mensagens.")
 
     #Cria um thread para ler as respostas, assim, não trava o sistema.
-    receive_thread = threading.Thread(target=receive_messages, args=(client_socket, HEADER_LENGTH, my_username))
+    receive_thread = threading.Thread(target=receive_messages, args=(client_socket, HEADER_LENGTH))
     receive_thread.start()
 
     while True:

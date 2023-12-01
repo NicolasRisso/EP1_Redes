@@ -1,5 +1,6 @@
 import pygame
 import threading
+import socket
 from network import Network
 import pickle
 from classes.button import Button as MyButton
@@ -20,6 +21,23 @@ button_images = [pygame.image.load("../art/icons/pedra.png"),
                  pygame.image.load("../art/icons/tesoura.png")]
 background_image = pygame.image.load("../art/icons/moldura.png")
 conectar_button_image = pygame.image.load("../art/buttons/connect_text.png")
+
+global ip
+global porta
+global my_username
+
+def verificar_conexao(ip, porta):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(1)
+    try:
+        sock.connect((ip, porta))
+        print(f"Conexão bem-sucedida com {ip}:{porta}")
+        return True
+    except socket.error as e:
+        print(f"Erro ao conectar com {ip}:{porta}: {e}")
+        return False
+    finally:
+        sock.close()
 
 
 def redrawWindow(win, game, p):
@@ -75,9 +93,11 @@ btns = [MyButton(button_images[0], (103, 500), "Rock", background_image),
         MyButton(button_images[2], (501, 500), "Scissors", background_image)]
 
 def main():
+    global ip
+    global porta
     run = True
     clock = pygame.time.Clock()
-    n = Network()
+    n = Network(server=ip, port=porta)
     player = int(n.getP())
     #print("Você é o jogador", player)
 
@@ -131,6 +151,9 @@ def main():
         redrawWindow(win, game, player)
 
 def menu_screen():
+    global ip
+    global porta
+    global my_username
     run = True
     clock = pygame.time.Clock()
 
@@ -149,12 +172,15 @@ def menu_screen():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 run = False
 
-    thread_client_chat = threading.Thread(target=client_chat)
+    thread_client_chat = threading.Thread(target=client_chat, args=[ip, my_username])
     thread_client_chat.start()
 
     main()
 
 def hub_screen():
+    global ip
+    global porta
+    global my_username
     clock = pygame.time.Clock()
     input_box1 = InputBox(300, 300, 140, 32)
     input_box2 = InputBox(300, 400, 140, 32)
@@ -181,11 +207,15 @@ def hub_screen():
                 for btn in buttons:
                     if btn.click(pos):
                         if btn.callback == "Connect":
-                            return 
+                            my_username = InputBox.getText(input_box1)
+                            ip = InputBox.getText(input_box2)
+                            porta = int(InputBox.getText(input_box3))
+                            if verificar_conexao(ip, porta): return
 
         for box in input_boxes:
-            box.update()                    
+            box.update()
 
+        win.fill((30, 30, 30))
         for box in input_boxes:
             box.draw(win)
         for text in texts:

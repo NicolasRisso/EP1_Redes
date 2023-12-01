@@ -55,7 +55,7 @@ def server_chat():
         #Ler todas as potenciais novas conexões
         for notified_socket in read_sockets:
 
-            # Se a conexão notificado for um "servidor", nova conexão, aceitaremos-a. (português foda aqui kkkk)
+            # Se a conexão notificado for um "servidor", nova conexão, aceitaremos-a.
             if notified_socket == server_socket:
                 #Aceitamos a conexão
                 client_socket, client_address = server_socket.accept()
