@@ -48,76 +48,77 @@ def receive_message(client_socket):
         return False
 
 def server_chat():
-    while True:
+    try:
+        while True:
+            read_sockets, _, exception_sockets = select.select(sockets_list, [], sockets_list)
 
-        read_sockets, _, exception_sockets = select.select(sockets_list, [], sockets_list)
+            # Ler todas as potenciais novas conexões
+            for notified_socket in read_sockets:
+                # Se a conexão notificado for um "servidor", nova conexão, aceitaremos-a.
+                if notified_socket == server_socket:
+                    # Aceitamos a conexão
+                    client_socket, client_address = server_socket.accept()
 
-        #Ler todas as potenciais novas conexões
-        for notified_socket in read_sockets:
+                    # Recebe o nome do cliente
+                    user = receive_message(client_socket)
 
-            # Se a conexão notificado for um "servidor", nova conexão, aceitaremos-a.
-            if notified_socket == server_socket:
-                #Aceitamos a conexão
-                client_socket, client_address = server_socket.accept()
+                    # Se não mandar, o cliente fechou a conexão antes mesmo de começá-la.
+                    if user is False:
+                        continue
 
-                #Recebe o nome do cliente
-                user = receive_message(client_socket)
+                    # Adiciona o Socket à lista de sockets de clientes.
+                    sockets_list.append(client_socket)
 
-                #Se não mandar, o cliente fechou a conexão antes mesmo de começá-la.
-                if user is False:
-                    continue
+                    # E salva o username do cliente para uso futuro.
+                    clients[client_socket] = user
 
-                #Adiciona o Socket à lista de sockets de clientes.
-                sockets_list.append(client_socket)
-
-                #E salva o username do cliente para uso futuro.
-                clients[client_socket] = user
-
-                print_colored("[CHAT]> ", Colors.MAGENTA)
-                print('Nova conexão aceita de {}:{}, username: {}'.format(*client_address, user['data'].decode('utf-8')))
-
-            # Se a conexão já existir, ela já é um cliente.
-            else:
-
-                #Receba a mensagem.
-                message = receive_message(notified_socket)
-
-                #Se a mensagem for False, o cliente se desconectou.
-                if message is False:
                     print_colored("[CHAT]> ", Colors.MAGENTA)
-                    print('Conexão fechada de: {}'.format(clients[notified_socket]['data'].decode('utf-8')))
+                    print('Nova conexão aceita de {}:{}, username: {}'.format(*client_address, user['data'].decode('utf-8')))
 
-                    #Removemos o cliente da lista de sockets.
-                    sockets_list.remove(notified_socket)
+                # Se a conexão já existir, ela já é um cliente.
+                else:
+                    # Receba a mensagem.
+                    message = receive_message(notified_socket)
 
-                    #E da lista de usuários.
-                    del clients[notified_socket]
+                    # Se a mensagem for False, o cliente se desconectou.
+                    if message is False:
+                        print_colored("[CHAT]> ", Colors.MAGENTA)
+                        print('Conexão fechada de: {}'.format(clients[notified_socket]['data'].decode('utf-8')))
 
-                    continue
+                        # Removemos o cliente da lista de sockets.
+                        sockets_list.remove(notified_socket)
 
-                #Separamos o usuário por Socket notificado, para, assim, sabermos quem ele é
-                user = clients[notified_socket]
+                        # E da lista de usuários.
+                        del clients[notified_socket]
 
-                print_colored("[CHAT]> ", Colors.MAGENTA)
-                print(f'Mensagem recebida de ({user["data"].decode("utf-8")}): {message["data"].decode("utf-8")}')
+                        continue
 
-                #Passamos por todos os clientes.
-                for client_socket in clients:
+                    # Separamos o usuário por Socket notificado, para, assim, sabermos quem ele é
+                    user = clients[notified_socket]
 
-                    #Não mandamos a mensagem do remetente devolta para ele.
-                    if client_socket != notified_socket:
+                    print_colored("[CHAT]> ", Colors.MAGENTA)
+                    print(f'Mensagem recebida de ({user["data"].decode("utf-8")}): {message["data"].decode("utf-8")}')
 
-                        #Envia a mensagem (com username junto)
-                        client_socket.send(user['header'] + user['data'] + message['header'] + message['data'])
+                    # Passamos por todos os clientes.
+                    for client_socket in clients:
+                        # Não mandamos a mensagem do remetente de volta para ele.
+                        if client_socket != notified_socket:
+                            # Envia a mensagem (com username junto)
+                            try:
+                                client_socket.send(user['header'] + user['data'] + message['header'] + message['data'])
+                            except Exception as e:
+                                print(f"Error sending message to client: {e}")
+                                # Lidar com a exceção de envio aqui
 
-        #Para lidar com algumas exceptions
-        for notified_socket in exception_sockets:
+            # Para lidar com algumas exceptions
+            for notified_socket in exception_sockets:
+                # Remove da Socket List
+                sockets_list.remove(notified_socket)
+                # Remove da Client list
+                del clients[notified_socket]
 
-            #Remove da Socket List
-            sockets_list.remove(notified_socket)
-
-            #Remove da Client list
-            del clients[notified_socket]
+    except Exception as e:
+        print(f"Exception in server_chat: {e}")
 
 if __name__ == "__main__":
     server_chat()
