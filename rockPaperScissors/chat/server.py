@@ -4,30 +4,6 @@ from chat.colors import Colors, print_colored
 
 HEADER_LENGTH = 10
 
-IP = "localhost"
-PORT = 6968
-
-#Realizamos uma conexão TCP
-server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-#Definimos o Socket como reutilizavel -> Ou seja, mesmo que estaja esperando
-#uma resposta, ele ainda poderá enviar novas mensagens.
-server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
-#Conecta
-server_socket.bind((IP, PORT))
-
-#Define que o Socket ira "ouvir" a novas conexões
-server_socket.listen()
-
-#Lista de Sockets e de Clientes
-sockets_list = [server_socket]
-clients = {}
-
-print_colored("[CHAT]> ", Colors.MAGENTA)
-print(f'Servidor ouvindo conexão em {IP}:{PORT}...')
-
-
 def receive_message(client_socket):
     try:
         #Header contem o tamanho da mensagem que será recebida.
@@ -47,7 +23,31 @@ def receive_message(client_socket):
         #Pega o caso em que o cliente fecha brutalmente seu programa (alt + f4) ou (ctrl + C).
         return False
 
-def server_chat():
+def server_chat(server_ip="localhost"):
+
+    IP = server_ip
+    PORT = 6968
+
+    #Realizamos uma conexão TCP
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    #Definimos o Socket como reutilizavel -> Ou seja, mesmo que estaja esperando
+    #uma resposta, ele ainda poderá enviar novas mensagens.
+    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+    #Conecta
+    server_socket.bind((IP, PORT))
+
+    #Define que o Socket ira "ouvir" a novas conexões
+    server_socket.listen()
+
+    #Lista de Sockets e de Clientes
+    sockets_list = [server_socket]
+    clients = {}
+
+    print_colored("[CHAT]> ", Colors.MAGENTA)
+    print(f'Servidor ouvindo conexão em {IP}:{PORT}...')
+
     try:
         while True:
             read_sockets, _, exception_sockets = select.select(sockets_list, [], sockets_list)

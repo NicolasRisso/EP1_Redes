@@ -22,6 +22,10 @@ button_images = [pygame.image.load("../art/icons/pedra.png"),
 background_image = pygame.image.load("../art/icons/moldura.png")
 conectar_button_image = pygame.image.load("../art/buttons/connect_text.png")
 
+global thread_client_chat
+
+thread_client_chat = threading.Thread()
+
 global ip
 global porta
 global my_username
@@ -171,6 +175,7 @@ def menu_screen():
     global ip
     global porta
     global my_username
+    global thread_client_chat
     run = True
     clock = pygame.time.Clock()
 
@@ -188,16 +193,21 @@ def menu_screen():
                 run = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 run = False
-
-    thread_client_chat = threading.Thread(target=client_chat, args=[ip, my_username])
-    thread_client_chat.start()
+    if thread_client_chat and not thread_client_chat.is_alive():
+        thread_client_chat = threading.Thread(target=client_chat, args=[ip, my_username])
+        thread_client_chat.start()
 
     main()
 
 def hub_screen():
+    global thread_client_chat
     global ip
     global porta
     global my_username
+    global vitorias
+    global derrotas
+    vitorias = derrotas = 0
+
     clock = pygame.time.Clock()
     input_box1 = InputBox(300, 300, 140, 32)
     input_box2 = InputBox(300, 400, 140, 32)

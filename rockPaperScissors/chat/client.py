@@ -94,6 +94,5 @@ def client_chat(IP, my__username):
             message_header = f"{len(message):<{HEADER_LENGTH}}".encode('utf-8')
             client_socket.send(message_header + message)
 
-
 if __name__ == "__main__":
     client_chat()

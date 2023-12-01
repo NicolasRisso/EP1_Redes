@@ -9,6 +9,11 @@ from chat.colors import Colors, print_colored
 server = "localhost"
 port = 6969
 
+tmp2 = input("Digite o seu ip para hospedar o Servidor: ")
+if tmp2 != "": server = tmp2 
+tmp = input("Digite a porta do Servidor: ")
+if tmp != "" and int(tmp) is int: port = tmp
+
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 try:
@@ -61,8 +66,6 @@ def threaded_client(conn, p, gameId):
     idCount -= 1
     conn.close()
 
-
-
 while True:
     conn, addr = s.accept()
     print_colored("[GAME]> ", Colors.GREEN)
@@ -79,10 +82,10 @@ while True:
         games[gameId].ready = True
         p = 1
 
-
     start_new_thread(threaded_client, (conn, p, gameId))
 
     once = True
     if once:
-        thread_server_chat = threading.Thread(target=server_chat)
+        thread_server_chat = threading.Thread(target=server_chat, args=(server,))
         thread_server_chat.start()
+        once = False
