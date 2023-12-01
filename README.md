@@ -21,6 +21,8 @@ Desenvolvido Por:
 - Nicolas Pereira Risso Vieira
 - Andreas Hukuhara Christe
 - Pedro Palazzi de Souza
+
+## Agradecimentos
 Os tutoriais abaixo foram de grande ajuda para o desenvolvimento desse projeto:
 - https://www.youtube.com/watch?v=ytu2yV3Gn1I
 - https://www.techwithtim.net/tutorials/python-online-game-tutorial/online-rock-paper-scissors-p-4
