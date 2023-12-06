@@ -9,10 +9,13 @@ from chat.colors import Colors, print_colored
 server = "localhost"
 port = 6969
 
+print_colored("[HOST]> ", Colors.BLUE)
 server = input("Digite o seu ip para hospedar o Servidor: ")
+print_colored("[HOST]> ", Colors.BLUE)
 port = int(input("Digite a porta do Servidor: "))
-if port > 9999 or port < 1000 or port == 6968:
+if port > 65535 or port < 1000 or port == 6968:
     port = 6969
+    print_colored("[HOST]> ", Colors.BLUE)
     print("Porta Inválida, redefinida para: 6969")
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
